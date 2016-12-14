@@ -1,2 +1,3 @@
 fixnum/fixnum.test
 fixnum/explode2_test.go
+*.out

@@ -4,6 +4,30 @@ import (
 	"testing"
 )
 
+func BenchmarkExplode(b *testing.B) {
+	promotions := []int64{144388, 1468, 944}
+	skus := []int64{4800, 4800, 25800, 19800, 15800, 18800, 4800, 13800, 28800, 4800, 4800}
+	max := map[Cell]int64{
+		Cell{SkuI: 3, ProI: 2}:  0,
+		Cell{SkuI: 8, ProI: 1}:  0,
+		Cell{SkuI: 10, ProI: 1}: 12,
+		Cell{SkuI: 7, ProI: 0}:  11388,
+	}
+	for i := 0; i < b.N; i++ {
+		tbl, err := Explode(promotions, skus, max)
+		if err != nil {
+			b.Fatal(err)
+		}
+		for _, row := range tbl.Data {
+			var total int64
+			for _, v := range row {
+				total += v
+			}
+			ExplodeSku(row, total, 4)
+		}
+	}
+}
+
 func TestExplode(t *testing.T) {
 	explodeNum := func(pro, skus []int64, dis map[Cell]int64) {
 		table, err := Explode(pro, skus, dis)

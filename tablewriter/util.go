@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/mattn/go-runewidth"
+	"maths/tablewriter/go-runewidth"
 )
 
 var ansi = regexp.MustCompile("\033\\[(?:[0-9]{1,3}(?:;[0-9]{1,3})*)?[m|K]")
