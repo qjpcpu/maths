@@ -193,20 +193,19 @@ func Explode(promotions []int64, skus []int64, maxPromotion map[Cell]int64) (Tab
 			}
 		}
 	}
-	if ok, err := table.adjustColumn(); err != nil {
-		return table, err
-	} else if ok {
-		if ok2, err2 := table.adjustMatrix(); err2 != nil {
-			return table, err2
-		} else if ok2 {
-			return table, nil
+	for flow := true; flow; flow = false {
+		if err = table.adjustColumn(); err != nil {
+			break
+		}
+		if err = table.adjustMatrix(); err != nil {
+			break
 		}
 	}
-	return table, errors.New("can't make it after 1000 times")
+	return table, err
 }
 
 // 该步调平仅保证在有sku不参与某些优惠前提下, 横竖追平,但不保证某sku分得的某项优惠超出自身最大值限制
-func (tbl *Table) adjustColumn() (bool, error) {
+func (tbl *Table) adjustColumn() error {
 	if Debug {
 		tbl.History = append(tbl.History, "初始分布:\n"+tbl.Render())
 	}
@@ -238,11 +237,11 @@ func (tbl *Table) adjustColumn() (bool, error) {
 			}
 		}
 		if iless == -1 && imore == -1 {
-			return true, nil
+			return nil
 		}
 		if iless == -1 || imore == -1 {
 			// 无法找到互补列
-			return false, errors.New("can't make it: complementary columns not found")
+			return errors.New("can't make it: complementary columns not found")
 		}
 		var val int64 = 0
 		if diff[iless]+diff[imore] > 0 {
@@ -283,14 +282,14 @@ func (tbl *Table) adjustColumn() (bool, error) {
 		}
 	}
 	if len(omitProColumnIndex) >= len(promotions)-1 {
-		return false, errors.New("can't find two promotions to adjust")
+		return errors.New("can't find two promotions to adjust")
 	}
 	for _, d := range diff {
 		if d != 0 {
-			return false, nil
+			return errors.New("can't adjust columns")
 		}
 	}
-	return true, nil
+	return nil
 }
 
 // 本调平保证不超出具体项最大值,采用矩形置换法
@@ -298,7 +297,7 @@ func (tbl *Table) adjustColumn() (bool, error) {
 //   |                       |
 //   |                       |
 // X(-1)  ---------------> C(+1)
-func (tbl *Table) adjustMatrix() (bool, error) {
+func (tbl *Table) adjustMatrix() error {
 	data := tbl.Data
 	maxVals := tbl.maxPromotion
 	for {
@@ -369,10 +368,10 @@ func (tbl *Table) adjustMatrix() (bool, error) {
 			}
 		}
 		if exCell.SkuI == -1 || exCell.ProI == -1 {
-			return false, fmt.Errorf("can't find matrix for exchange values match %+v", cell)
+			return fmt.Errorf("can't find matrix for exchange values match %+v", cell)
 		}
 	}
-	return true, nil
+	return nil
 }
 
 func DispatchByWeight(total int64, weights []int64) ([]int64, error) {
