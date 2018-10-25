@@ -9,8 +9,8 @@ import (
 
 var Debug bool = false
 
-//  +-----------+----------+----------+-----------+-----------+
-//	|           | PRO-1(5) | PRO-2(0) | PRO-3(25) | PRO-4(60) |
+//      +-----------+----------+----------+-----------+-----------+
+//	|           | PAY-1(5) | PAY-2(0) | PAY-3(25) | PAY-4(60) |
 //	+-----------+----------+----------+-----------+-----------+
 //	| SKU-1(20) |        1 |        0 |         5 |        14 |
 //	| SKU-2(30) |        1 |        0 |         8 |        21 |
@@ -35,7 +35,7 @@ func (tbl Table) Render() string {
 	table := tablewriter.NewWriter(b)
 	headers := []string{""}
 	for i, pro := range tbl.Promotions {
-		headers = append(headers, fmt.Sprintf("PRO-%v(%v)", i, pro))
+		headers = append(headers, fmt.Sprintf("PAY-%v(%v)", i, pro))
 	}
 	table.SetHeader(headers)
 
@@ -279,7 +279,7 @@ func (tbl *Table) adjustColumn() (bool, error) {
 		diff[iless] -= val
 		// 调整日志
 		if Debug {
-			tbl.History = append(tbl.History, fmt.Sprintf("SKU-%v PRO-(%v,%v)-调整值%v\n%s", isku, iless, imore, val, tbl.Render()))
+			tbl.History = append(tbl.History, fmt.Sprintf("SKU-%v PAY-(%v,%v)-调整值%v\n%s", isku, iless, imore, val, tbl.Render()))
 		}
 	}
 	if len(omitProColumnIndex) >= len(promotions)-1 {
