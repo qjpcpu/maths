@@ -1,4 +1,4 @@
-package fixnum
+package refund
 
 import (
 	"testing"

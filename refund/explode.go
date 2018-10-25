@@ -1,10 +1,10 @@
-package fixnum
+package refund
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
-	"maths/tablewriter"
+	"github.com/olekukonko/tablewriter"
 )
 
 var Debug bool = false
